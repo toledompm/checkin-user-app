@@ -1,7 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
 
-export async function checkin(userCheckinToken: string, url: string, authToken: string): Promise<AxiosResponse<any>> {
-  const apiInstance = axios.create({
+type CheckinTokenResponse = {
+  refreshToken: string;
+}
+
+function createApiInstance(url:string, authToken:string) {
+  return axios.create({
     baseURL: url,
     timeout: 1000,
     headers: {
@@ -9,5 +13,9 @@ export async function checkin(userCheckinToken: string, url: string, authToken: 
       Authorization: `Bearer ${authToken}`,
     },
   });
-  return apiInstance.post('/checkin', { refreshToken: userCheckinToken });
+}
+
+export async function getCheckinToken(url: string, authToken: string): Promise<AxiosResponse<CheckinTokenResponse>> {
+  const apiInstance = createApiInstance(url, authToken);
+  return apiInstance.get<CheckinTokenResponse>('/user');
 }

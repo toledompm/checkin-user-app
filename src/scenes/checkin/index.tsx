@@ -1,41 +1,43 @@
 import { mainButton } from 'components/buttons';
 import React from 'react';
 import { SafeAreaView, View } from 'react-native';
-import { Input } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { colors, mainSceneStyle, simpleInputStyle } from 'styles';
-import * as API from 'utils/api';
+import QRCode from 'react-native-qrcode-svg';
+import { colors, mainSceneStyle } from 'styles';
+import { getCheckinToken } from 'utils/api';
 
 function checkin(url: string, userToken: string): JSX.Element {
-  let loginTokenInput: string;
+  const [checkinTokenQrCode, setCheckinTokenQrCode] = React.useState('');
 
-  const checkinButtonAction = async () => {
-    try {
-      await API.checkin(loginTokenInput, url, userToken);
-      alert('Checkin successful');
-    } catch(error) {
-      alert('Checkin failed');
-    }
-  }
+  const handleClick = async () => {
+    const newCheckinToken = await getCheckinToken(url, userToken);
+    setCheckinTokenQrCode(newCheckinToken.data.refreshToken);
+  };
+
+  const buildQrCode = () => {
+    return checkinTokenQrCode ? (
+      <QRCode
+        value={checkinTokenQrCode}
+        size={400}
+        color={colors.contrast}
+        backgroundColor={colors.main}
+      />
+    ) : null;
+  };
 
   return (
     <SafeAreaView style={mainSceneStyle.container}>
-      <View style={{flex:1, alignSelf: 'stretch', alignItems: 'center'}}>
-        <Icon
-          name={'qrcode'}
-          size={150}
-          color={colors.contrast}
-          style={{marginTop: 180}}
-        />
+      <View
+        style={{
+          flex: 1,
+          alignSelf: 'stretch',
+          alignItems: 'center',
+          marginTop: 150,
+        }}
+      >
+        {buildQrCode()}
       </View>
-      <View style={{flex:1, alignSelf: 'stretch'}}>
-      <Input
-          placeholder="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-          style={simpleInputStyle}
-          onChangeText={(text: string) => (loginTokenInput = text)}
-          defaultValue=""
-        />
-      {mainButton('check-in', () => checkinButtonAction(), {container: {marginTop: 50}})}
+      <View style={{ flex: 1, alignSelf: 'stretch' }}>
+        {mainButton('check-in', handleClick, { container: { marginTop: 100 } })}
       </View>
     </SafeAreaView>
   );
