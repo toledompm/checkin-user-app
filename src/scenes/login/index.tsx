@@ -1,14 +1,9 @@
 import { alternateButton, mainButton } from 'components/buttons';
 import React from 'react';
-import { Linking, SafeAreaView, View, Text } from 'react-native';
+import { Linking, SafeAreaView, View } from 'react-native';
 import { Input } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {
-  colors,
-  mainSceneStyle,
-  simpleInputStyle,
-  titleTextStyle,
-} from 'styles';
+import { colors, mainSceneStyle, simpleInputStyle } from 'styles';
 import { storeUserToken } from 'utils/store';
 
 function login(
